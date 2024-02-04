@@ -1,6 +1,7 @@
 import numpy as np
 import time
 
+
 class ACO_Knapsack:
     def __init__(self, num_items, values, weights, max_weight, num_ants, num_iterations, decay, alpha, beta):
         self.num_items = num_items
@@ -14,43 +15,41 @@ class ACO_Knapsack:
         self.alpha = alpha
         self.beta = beta
 
-    def local_search(self, initial_solution):
-        current_solution = initial_solution[:]
-        current_value, current_weight = self.evaluate_solution(current_solution)
+    def local_search(self, solution):
         improved = True
-
         while improved:
             improved = False
+            current_solution = solution.copy()
+            current_value, current_weight = self.evaluate_solution(current_solution)
+
             for i in range(self.num_items):
                 if current_solution[i] == 0:
-                    new_solution = current_solution[:]
-                    new_solution[i] = 1
-                    new_value, new_weight = self.evaluate_solution(new_solution)
-                    if new_weight <= self.max_weight and new_value > current_value:
-                        current_solution = new_solution
-                        current_value = new_value
-                        improved = True
+                    if current_weight + self.weights[i] <= self.max_weight:
+                        test_solution = current_solution.copy()
+                        test_solution[i] = 1
+                        test_value, test_weight = self.evaluate_solution(test_solution)
+                        if test_value > current_value:
+                            solution = test_solution.copy()
+                            current_value = test_value
+                            current_weight = test_weight
+                            improved = True
                 else:
-                    new_solution = current_solution[:]
-                    new_solution[i] = 0
-                    new_value, new_weight = self.evaluate_solution(new_solution)
-                    if new_value > current_value:
-                        current_solution = new_solution
-                        current_value = new_value
-                        improved = True
-
+                    test_solution = current_solution.copy()
+                    test_solution[i] = 0
+                    removed_weight = current_weight - self.weights[i]
                     for j in range(self.num_items):
-                        if new_solution[j] == 0:
-                            swap_solution = new_solution[:]
-                            swap_solution[i] = 0
+                        if j != i and test_solution[j] == 0 and removed_weight + self.weights[j] <= self.max_weight:
+                            swap_solution = test_solution.copy()
                             swap_solution[j] = 1
                             swap_value, swap_weight = self.evaluate_solution(swap_solution)
-                            if swap_weight <= self.max_weight and swap_value > current_value:
-                                current_solution = swap_solution
+                            if swap_value > current_value:
+                                solution = swap_solution.copy()
                                 current_value = swap_value
+                                current_weight = swap_weight
                                 improved = True
+                                break
 
-        return current_solution, current_value
+        return solution, current_value
 
     def run(self):
         current_best_value = 0
@@ -81,17 +80,17 @@ class ACO_Knapsack:
         return solutions
 
     def update_pheromones(self, solutions):
-        self.pheromone *= (1 - self.decay)  # Pheromone evaporation
+        self.pheromone *= (1 - self.decay)
         for solution in solutions:
             value, weight = self.evaluate_solution(solution)
             if weight <= self.max_weight:
                 for i, included in enumerate(solution):
                     if included:
-                        self.pheromone[i] += value / weight  # Update pheromone
+                        self.pheromone[i] += value / weight
 
     def evaluate_solution(self, solution):
-        value = sum([v * s for v, s in zip(self.values, solution)])
-        weight = sum([w * s for w, s in zip(self.weights, solution)])
+        value = np.dot(self.values, solution)
+        weight = np.dot(self.weights, solution)
         return value, weight
 
 
@@ -108,13 +107,13 @@ def run_and_print_result(knapsack_solver, number_of_runs):
         print(f"Execution time: {execution_time} seconds")
 
 
-def tunning_process_grid_search(num_items, values, weights, max_weight):
+def tuning_process_grid_search(num_items, values, weights, max_weight):
 
     alphas = [0.5, 1, 2, 3, 4, 5]
     betas = [1, 2, 3, 4, 5]
     decays = [0.1, 0.2, 0.3, 0.4, 0.5]
-    num_ants = [num_items, num_items*2]
-    num_iterations = [100, 500, 1000]
+    num_ants = [num_items, num_items*2, num_items*3, num_items*4, num_items*5, num_items*6, num_items*7, num_items*8, num_items*9, num_items*10]
+    num_iterations = [100]
 
     for alpha in alphas:
         for beta in betas:
@@ -171,44 +170,57 @@ def main():
 
     #optimal 309
     aco_knapsack_p01 = ACO_Knapsack(num_items=num_items_P01, values=values_P01, weights=weights_P01,
-                                    max_weight=max_weight_P01, num_ants=num_items_P01*2, num_iterations=300, decay=0.5,
-                                    alpha=1,
-                                    beta=1.5)
+                                    max_weight=max_weight_P01, num_ants=num_items_P01*2, num_iterations=100, decay=0.1,
+                                    alpha=0.5,
+                                    beta=2)
 
-    run_and_print_result(aco_knapsack_p01, number_of_runs)
+    #run_and_print_result(aco_knapsack_p01, number_of_runs)
+    #tunning_process_grid_search(num_items_P01, values_P01, weights_P01, max_weight_P01)
 
     #optimal 51
     aco_knapsack_p02 = ACO_Knapsack(num_items=num_items_P02, values=values_P02, weights=weights_P02,
-                                    max_weight=max_weight_P02, num_ants=num_items_P02*2, num_iterations=300, decay=0.5, alpha=2,
-                                    beta=1)
+                                    max_weight=max_weight_P02, num_ants=num_items_P02*2, num_iterations=100, decay=0.3, alpha=0.5,
+                                    beta=2)
 
-    run_and_print_result(aco_knapsack_p02, number_of_runs)
+    #run_and_print_result(aco_knapsack_p02, number_of_runs)
+    #tunning_process_grid_search(num_items_P02, values_P02, weights_P02, max_weight_P02)
+
+
 
     #optimal 1735
+    #Alpha: 0.5, Beta: 1, Decay: 0.1, Ants: 14, Iterations: 100, Value: 1735
     aco_knapsack_p06 = ACO_Knapsack(num_items=num_items_P06, values=values_P06, weights=weights_P06,
-                                    max_weight=max_weight_P06, num_ants=num_items_P06*2, num_iterations=500, decay=0.5, alpha=1,
+                                    max_weight=max_weight_P06, num_ants=num_items_P06*2, num_iterations=100, decay=0.1, alpha=0.5,
                                     beta=1)
 
-    run_and_print_result(aco_knapsack_p06, number_of_runs)
+    #run_and_print_result(aco_knapsack_p06, number_of_runs)
+    #tunning_process_grid_search(num_items_P06, values_P06, weights_P06, max_weight_P06)
+
 
     #optimal 1458
+    #Alpha: 1, Beta: 3, Decay: 0.4, Ants: 30, Iterations: 100, Value: 1458
+
     aco_knapsack_p07 = ACO_Knapsack(num_items=num_items_P07, values=values_P07, weights=weights_P07,
-                                    max_weight=max_weight_P07, num_ants=num_items_P07, num_iterations=200, decay=0.3, alpha=0.5,
+                                    max_weight=max_weight_P07, num_ants=num_items_P07*2, num_iterations=100, decay=0.4, alpha=1,
                                     beta=3)
 
-    tunning_process_grid_search(num_items_P07, values_P07, weights_P07, max_weight_P07)
-
-
+    #tunning_process_grid_search(num_items_P07, values_P07, weights_P07, max_weight_P07)
     #run_and_print_result(aco_knapsack_p07, number_of_runs)
 
 
+    # #Alpha: 1, Beta: 4, Decay: 0.5, Ants: 216, Iterations: 100, Value: 13549094
+    # #Alpha: 2, Beta: 5, Decay: 0.3, Ants: 144, Iterations: 100, Value: 13549094
+    # Alpha: 3, Beta: 3, Decay: 0.3, Ants: 192, Iterations: 100, Value: 13549094
+    # Alpha: 3, Beta: 3, Decay: 0.3, Ants: 216, Iterations: 100, Value: 13549094
+    # Alpha: 3, Beta: 3, Decay: 0.3, Ants: 240, Iterations: 100, Value: 13549094
     #optimal 13549094
+
     aco_knapsack_p08 = ACO_Knapsack(num_items=num_items_P08, values=values_P08, weights=weights_P08,
-                                    max_weight=max_weight_P08, num_ants=num_items_P08, num_iterations=200, decay=0.3, alpha=0.5,
+                                    max_weight=max_weight_P08, num_ants=192, num_iterations=100, decay=0.3, alpha=3,
                                     beta=3)
 
-    #run_and_print_result(aco_knapsack_p07, number_of_runs)
-
+    run_and_print_result(aco_knapsack_p08, number_of_runs)
+    #tunning_process_grid_search(num_items_P08, values_P08, weights_P08, max_weight_P08)
 
 
 if __name__ == "__main__":

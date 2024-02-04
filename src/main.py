@@ -169,27 +169,27 @@ def main():
 
     number_of_runs = 3
 
-    # #optimal 309
-    # aco_knapsack_p01 = ACO_Knapsack(num_items=num_items_P01, values=values_P01, weights=weights_P01,
-    #                                 max_weight=max_weight_P01, num_ants=num_items_P01*2, num_iterations=1000, decay=0.5,
-    #                                 alpha=1,
-    #                                 beta=1.5)
-    #
-    # run_and_print_result(aco_knapsack_p01, number_of_runs)
-    #
-    # #optimal 51
-    # aco_knapsack_p02 = ACO_Knapsack(num_items=num_items_P02, values=values_P02, weights=weights_P02,
-    #                                 max_weight=max_weight_P02, num_ants=num_items_P02*2, num_iterations=1000, decay=0.5, alpha=2,
-    #                                 beta=1)
-    #
-    # run_and_print_result(aco_knapsack_p02, number_of_runs)
-    #
-    # #optimal 1735
-    # aco_knapsack_p06 = ACO_Knapsack(num_items=num_items_P06, values=values_P06, weights=weights_P06,
-    #                                 max_weight=max_weight_P06, num_ants=num_items_P06*2, num_iterations=1000, decay=0.5, alpha=1,
-    #                                 beta=1)
-    #
-    # run_and_print_result(aco_knapsack_p06, number_of_runs)
+    #optimal 309
+    aco_knapsack_p01 = ACO_Knapsack(num_items=num_items_P01, values=values_P01, weights=weights_P01,
+                                    max_weight=max_weight_P01, num_ants=num_items_P01*2, num_iterations=300, decay=0.5,
+                                    alpha=1,
+                                    beta=1.5)
+
+    run_and_print_result(aco_knapsack_p01, number_of_runs)
+
+    #optimal 51
+    aco_knapsack_p02 = ACO_Knapsack(num_items=num_items_P02, values=values_P02, weights=weights_P02,
+                                    max_weight=max_weight_P02, num_ants=num_items_P02*2, num_iterations=300, decay=0.5, alpha=2,
+                                    beta=1)
+
+    run_and_print_result(aco_knapsack_p02, number_of_runs)
+
+    #optimal 1735
+    aco_knapsack_p06 = ACO_Knapsack(num_items=num_items_P06, values=values_P06, weights=weights_P06,
+                                    max_weight=max_weight_P06, num_ants=num_items_P06*2, num_iterations=500, decay=0.5, alpha=1,
+                                    beta=1)
+
+    run_and_print_result(aco_knapsack_p06, number_of_runs)
 
     #optimal 1458
     aco_knapsack_p07 = ACO_Knapsack(num_items=num_items_P07, values=values_P07, weights=weights_P07,

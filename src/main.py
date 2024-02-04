@@ -1,4 +1,5 @@
 import numpy as np
+import time
 
 class ACO_Knapsack:
     def __init__(self, num_items, values, weights, max_weight, num_ants, num_iterations, decay, alpha, beta):
@@ -97,9 +98,14 @@ class ACO_Knapsack:
 def run_and_print_result(knapsack_solver, number_of_runs):
 
     for _ in range(number_of_runs):
+        start_time = time.time()
         best_solution, best_value = knapsack_solver.run()
+        end_time = time.time()
+        execution_time = end_time - start_time
+
         print("Best solution: ", best_solution)
         print("Best value: ", best_value)
+        print(f"Execution time: {execution_time} seconds")
 
 
 def tunning_process_grid_search(num_items, values, weights, max_weight):

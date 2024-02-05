@@ -1,9 +1,10 @@
 import numpy as np
 import time
+import matplotlib.pyplot as plt
 
 
 class ACO_Knapsack:
-    def __init__(self, num_items, values, weights, max_weight, num_ants, num_iterations, decay, alpha, beta):
+    def __init__(self, num_items, values, weights, max_weight, num_ants, num_iterations, decay, alpha, beta, optimal_value):
         self.num_items = num_items
         self.values = values
         self.weights = weights
@@ -14,6 +15,7 @@ class ACO_Knapsack:
         self.decay = decay
         self.alpha = alpha
         self.beta = beta
+        self.optimal_value =optimal_value
 
     def local_search(self, solution):
         improved = True
@@ -49,21 +51,51 @@ class ACO_Knapsack:
                                 improved = True
                                 break
 
-        return solution, current_value
+        return solution, current_value, current_weight
+
+    def draw_weight_to_values(self, weights, values):
+
+        plt.figure(figsize=(12,  6))
+
+        x_axis = [i for i in range(len(weights))]
+
+        plt.plot(x_axis, [self.max_weight for _ in range(len(weights))],  label='max weight', linewidth=2)
+        plt.plot(x_axis, [self.optimal_value for _ in range(len(weights))],  label='optimal value', linewidth=2)
+        plt.plot(x_axis, weights, label='weights')
+        plt.plot(x_axis, values, label='values')
+
+        plt.title('Weights and Values')
+        plt.xlabel('Ants*Iterations')
+        plt.ylabel('weights and values')
+
+        plt.legend()
+
+        plt.show()
 
     def run(self):
         current_best_value = 0
         current_best_solution = None
+
+        weights_list = []
+        values_list = []
+
         for _ in range(self.num_iterations):
             solutions = self.construct_solutions()
             self.update_pheromones(solutions)
             for solution in solutions:
                 value, weight = self.evaluate_solution(solution)
+
+                values_list.append(value)
+                weights_list.append(weight)
+
                 if weight <= self.max_weight:
-                    refined_solution, refined_value = self.local_search(solution)
+                    refined_solution, refined_value, refined_weight = self.local_search(solution)
+
                     if refined_value > current_best_value:
                         current_best_value = refined_value
                         current_best_solution = refined_solution
+
+        self.draw_weight_to_values(weights_list, values_list)
         return current_best_solution, current_best_value
 
     def construct_solutions(self):
@@ -166,21 +198,21 @@ def main():
     ])
     max_weight_P08 = 6404180
 
-    number_of_runs = 3
+    number_of_runs = 1
 
     #optimal 309
     aco_knapsack_p01 = ACO_Knapsack(num_items=num_items_P01, values=values_P01, weights=weights_P01,
                                     max_weight=max_weight_P01, num_ants=num_items_P01*2, num_iterations=100, decay=0.1,
                                     alpha=0.5,
-                                    beta=2)
+                                    beta=2, optimal_value=309)
 
-    #run_and_print_result(aco_knapsack_p01, number_of_runs)
+    run_and_print_result(aco_knapsack_p01, number_of_runs)
     #tunning_process_grid_search(num_items_P01, values_P01, weights_P01, max_weight_P01)
 
     #optimal 51
     aco_knapsack_p02 = ACO_Knapsack(num_items=num_items_P02, values=values_P02, weights=weights_P02,
                                     max_weight=max_weight_P02, num_ants=num_items_P02*2, num_iterations=100, decay=0.3, alpha=0.5,
-                                    beta=2)
+                                    beta=2, optimal_value=51)
 
     #run_and_print_result(aco_knapsack_p02, number_of_runs)
     #tunning_process_grid_search(num_items_P02, values_P02, weights_P02, max_weight_P02)
@@ -191,7 +223,7 @@ def main():
     #Alpha: 0.5, Beta: 1, Decay: 0.1, Ants: 14, Iterations: 100, Value: 1735
     aco_knapsack_p06 = ACO_Knapsack(num_items=num_items_P06, values=values_P06, weights=weights_P06,
                                     max_weight=max_weight_P06, num_ants=num_items_P06*2, num_iterations=100, decay=0.1, alpha=0.5,
-                                    beta=1)
+                                    beta=1,optimal_value=1735)
 
     #run_and_print_result(aco_knapsack_p06, number_of_runs)
     #tunning_process_grid_search(num_items_P06, values_P06, weights_P06, max_weight_P06)
@@ -200,12 +232,12 @@ def main():
     #optimal 1458
     #Alpha: 1, Beta: 3, Decay: 0.4, Ants: 30, Iterations: 100, Value: 1458
 
-    aco_knapsack_p07 = ACO_Knapsack(num_items=num_items_P07, values=values_P07, weights=weights_P07,
-                                    max_weight=max_weight_P07, num_ants=num_items_P07*2, num_iterations=100, decay=0.4, alpha=1,
-                                    beta=3)
-
-    #tunning_process_grid_search(num_items_P07, values_P07, weights_P07, max_weight_P07)
-    #run_and_print_result(aco_knapsack_p07, number_of_runs)
+    # aco_knapsack_p07 = ACO_Knapsack(num_items=num_items_P07, values=values_P07, weights=weights_P07,
+    #                                 max_weight=max_weight_P07, num_ants=num_items_P07*2, num_iterations=100, decay=0.4, alpha=1,
+    #                                 beta=3, optimal_value=1458)
+    #
+    # #tunning_process_grid_search(num_items_P07, values_P07, weights_P07, max_weight_P07)
+    # run_and_print_result(aco_knapsack_p07, number_of_runs)
 
 
     # #Alpha: 1, Beta: 4, Decay: 0.5, Ants: 216, Iterations: 100, Value: 13549094
@@ -216,10 +248,10 @@ def main():
     #optimal 13549094
 
     aco_knapsack_p08 = ACO_Knapsack(num_items=num_items_P08, values=values_P08, weights=weights_P08,
-                                    max_weight=max_weight_P08, num_ants=192, num_iterations=100, decay=0.3, alpha=3,
-                                    beta=3)
+                                   max_weight=max_weight_P08, num_ants=192, num_iterations=100, decay=0.3, alpha=3,
+                                   beta=3,optimal_value= 13549094)
 
-    run_and_print_result(aco_knapsack_p08, number_of_runs)
+    #run_and_print_result(aco_knapsack_p08, number_of_runs)
     #tunning_process_grid_search(num_items_P08, values_P08, weights_P08, max_weight_P08)
 
 

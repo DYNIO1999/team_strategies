@@ -2,7 +2,8 @@ import numpy as np
 import time
 import matplotlib.pyplot as plt
 
-
+# class structure made by Filip Magdziak
+# https://github.com/k0n0di0d4
 class ACO_Knapsack:
     def __init__(self, num_items, values, weights, max_weight, num_ants, num_iterations, decay, alpha, beta, optimal_value):
         self.num_items = num_items
@@ -17,6 +18,8 @@ class ACO_Knapsack:
         self.beta = beta
         self.optimal_value =optimal_value
 
+    # made by Daniel Skrobot
+    # https://github.com/DYNIO1999
     def local_search(self, solution):
         improved = True
         while improved:
@@ -52,7 +55,8 @@ class ACO_Knapsack:
                                 break
 
         return solution, current_value, current_weight
-
+    # made by Daniel Skrobot
+    # https://github.com/DYNIO1999
     def draw_weight_to_values(self, weights, values):
 
         plt.figure(figsize=(12,  6))
@@ -72,6 +76,10 @@ class ACO_Knapsack:
 
         plt.show()
 
+    # made by Filip Magdziak
+    # https://github.com/k0n0di0d4
+    # and Daniel Skrobot
+    # https://github.com/DYNIO1999
     def run(self):
         current_best_value = 0
         current_best_solution = None
@@ -98,6 +106,8 @@ class ACO_Knapsack:
         self.draw_weight_to_values(weights_list, values_list)
         return current_best_solution, current_best_value
 
+    # made by Filip Magdziak
+    # https://github.com/k0n0di0d4
     def construct_solutions(self):
         solutions = []
         for _ in range(self.num_ants):
@@ -111,6 +121,8 @@ class ACO_Knapsack:
             solutions.append(solution)
         return solutions
 
+    # made by Filip Magdziak
+    # https://github.com/k0n0di0d4
     def update_pheromones(self, solutions):
         self.pheromone *= (1 - self.decay)
         for solution in solutions:
@@ -120,12 +132,15 @@ class ACO_Knapsack:
                     if included:
                         self.pheromone[i] += value / weight
 
+    # made by Filip Magdziak
+    # https://github.com/k0n0di0d4
     def evaluate_solution(self, solution):
         value = np.dot(self.values, solution)
         weight = np.dot(self.weights, solution)
         return value, weight
 
-
+# made by Daniel Skrobot
+# https://github.com/DYNIO1999
 def run_and_print_result(knapsack_solver, number_of_runs):
 
     for _ in range(number_of_runs):
@@ -138,7 +153,8 @@ def run_and_print_result(knapsack_solver, number_of_runs):
         print("Best value: ", best_value)
         print(f"Execution time: {execution_time} seconds")
 
-
+# made by Daniel Skrobot
+# https://github.com/DYNIO1999
 def tuning_process_grid_search(num_items, values, weights, max_weight):
 
     alphas = [0.5, 1, 2, 3, 4, 5]
@@ -162,7 +178,10 @@ def tuning_process_grid_search(num_items, values, weights, max_weight):
                             f"Iterations: {iterations}, "
                             f"Value: {value}")
 
-
+# made by Filip Magdziak
+# https://github.com/k0n0di0d4
+# and Daniel Skrobot
+# https://github.com/DYNIO1999
 def main():
 
     num_items_P01 = 10
